@@ -2,44 +2,49 @@
 
 namespace App\Livewire\Projects;
 
-use App\Models\Project;
+use Flux\Flux;
+use App\Services\ProjectService;
 use Livewire\Component;
+use Livewire\Attributes\Validate;
 use Livewire\WithFileUploads;
 
 class FormModal extends Component
 {
     use WithFileUploads;
 
-    public $name;
-    public $description;
-    public $deadline;
-    public $status = 'pending';
-    public $project_logo;
+    #[Validate('required|string|max:100')]
+    public $name = null;
 
-    public function saveProject()
+    #[Validate('required|string|max:255')]
+    public $description = null;
+
+    #[Validate('required|string')]
+    public $deadline = null;
+
+    #[Validate('required|string')]
+    public $status = 'pending';
+
+    #[Validate('nullable|image|max:5120')]
+    public $project_logo = null;
+
+    /**
+     * Function: saveProject
+     */
+    public function saveProject(ProjectService $projectService)
     {
-        $validated = $this->validate([
-            'name' => 'required|string|min:3|max:100',
-            'description' => 'required|string|max:255',
-            'deadline' => 'required|date',
-            'status' => 'required|in:pending,in-progress,completed,cancelled',
-            'project_logo' => 'nullable|image|max:5120',
+        # Validating form here
+        $validatedProjectRequest = $this->validate();
+
+        $projectService->saveProject($validatedProjectRequest);
+
+        $this->reset();
+
+        $this->dispatch('flash', [
+            'message' => 'Project created successfully.',
+            'type' => 'success',
         ]);
 
-        if ($this->project_logo) {
-            $validated['project_logo'] = $this->project_logo->store('project-logos', 'public');
-        }
-
-        Project::create($validated);
-
-        // Reset the form fields
-        $this->reset(['name', 'description', 'deadline', 'status', 'project_logo']);
-
-        // Dispatch an event to refresh the project list (if you have one)
-        $this->dispatch('project-created');
-
-        // Close the modal using Flux's JavaScript API
-        $this->js("Flux.modal('project-modal').close()");
+        Flux::modal('project-modal')->close();
     }
 
     public function render()
