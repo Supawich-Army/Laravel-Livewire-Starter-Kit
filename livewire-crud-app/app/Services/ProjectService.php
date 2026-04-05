@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use Illuminate\Support\Str;
 use App\Repositories\ProjectRepository;
 
 class ProjectService
@@ -12,7 +13,7 @@ class ProjectService
      */
     public function __construct(ProjectRepository $projectRepository)
     {
-        //
+        $this->projectRepository = $projectRepository;
     }
 
     public function saveProject($projectRequest)
@@ -29,5 +30,13 @@ class ProjectService
         $projectRequest['slug'] = Str::slug($projectRequest['name']);
 
         return $this->projectRepository->saveProject($projectRequest);
+    }
+
+    /**
+     * Function: getAllProjects
+     */
+    public function getAllProjects()
+    {
+        return $this->projectRepository->getProjectQuery();
     }
 }

@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('projects', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->string('deadline');
             $table->string('slug')->unique;
             $table->string('description');
             $table->enum('status', ['pending', 'in-progress', 'completed', 'cancelled'])->default('pending');

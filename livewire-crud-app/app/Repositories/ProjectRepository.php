@@ -2,6 +2,8 @@
 
 namespace App\Repositories;
 
+use App\Models\Project;
+
 class ProjectRepository
 {
     /**
@@ -12,8 +14,20 @@ class ProjectRepository
         //
     }
 
+    /**
+     * Function: saveProject
+     * @param array $projectRequest
+     */
     public function saveProject($projectRequest)
     {
         return Project::create($projectRequest);
+    }
+
+    /**
+     * Function: getProjectQuery
+     */
+    public function getProjectQuery()
+    {
+        return Project::query();
     }
 }
