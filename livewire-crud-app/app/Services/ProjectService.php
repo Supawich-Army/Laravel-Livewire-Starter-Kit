@@ -70,6 +70,8 @@ class ProjectService
             $project->name = $projectRequest['name'];
             $project->slug = Str::slug($projectRequest['name']);
             $project->description = $projectRequest['description'];
+            $project->status = $projectRequest['status'];
+            $project->deadline = $projectRequest['deadline'];
 
             return $project->save();
         }

@@ -52,8 +52,6 @@ class FormModal extends Component
             $projectService->saveProject($validatedProjectRequest);
         }
 
-        $projectService->saveProject($validatedProjectRequest);
-
         $this->reset(['name', 'description', 'deadline', 'project_logo', 'projectId', 'existingImage']);
         $this->status = 'pending';
 
@@ -77,6 +75,8 @@ class FormModal extends Component
 
         if ($mode === 'create') {
             $this->isView = false;
+            $this->projectId = null;
+            $this->existingImage = null;
             $this->reset();
         } else {
             // mode view details
