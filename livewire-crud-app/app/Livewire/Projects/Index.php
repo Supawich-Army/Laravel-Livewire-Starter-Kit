@@ -30,34 +30,24 @@ class Index extends Component
     }
 
     /**
-     * Function: deleteProjectConfirmation
-     */
-    #[On('delete-project')]
-    public function deleteProjectConfirmation($id)
-    {
-        $this->projectId = $id;
-    }
-
-    /**
      * Function: deleteProject
      */
-    public function deleteProject(ProjectService $projectService)
+    #[On('delete-project')]
+    public function deleteProject(ProjectService $projectService, $id)
     {
-        if ($this->projectId) {
-            $projectService->deleteProject($this->projectId);
+        if ($id) {
+            $projectService->deleteProject($id);
         }
 
         $this->dispatch(
             'flash',
-            [
-                'message' => 'Project deleted successfully.',
-                'type' => 'success',
-            ]
+            message: 'Project deleted successfully.',
+            type: 'success'
         );
 
         $this->dispatch('$refresh');
 
-        Flux::modal('delete-project')->close();
+        Flux::modal('delete-confirmation-modal')->close();
     }
 
     public function render(ProjectService $projectService)

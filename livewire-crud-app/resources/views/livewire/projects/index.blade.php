@@ -10,9 +10,10 @@
 
     {{-- Render form component --}}
     <livewire:projects.form-modal />
+    <livewire:common.delete-confirmation />
 
     {{-- Flash Message component --}}
-    <div x-data="{ show: false, message: '', type: '' }" x-init="window.addEventListener('flash', e => {
+    <div wire:ignore x-data="{ show: false, message: '', type: '' }" x-init="window.addEventListener('flash', e => {
         const data = e.detail;
         message = data.message;
         type = data.type;
@@ -34,7 +35,7 @@
             <thead
                 class="bg-gray-50 dark:bg-zinc-800 text-gray-700 dark:text-zinc-300 uppercase text-xs font-semibold border-b">
                 <tr>
-                    <th class="p-4">#</th>
+                    <th class="p-4">No</th>
                     <th class="p-4">Name</th>
                     <th class="p-4">Description</th>
                     <th class="p-4">Status</th>
@@ -96,8 +97,16 @@
                                 </flux:modal.trigger>
 
                                 {{-- Delete --}}
-                                <flux:modal.trigger name="delete-project">
-                                    <flux:button wire:click="$dispatch('delete-project', {id: {{ $project->id }}})"
+                                <flux:modal.trigger name="delete-confirmation-modal">
+                                    <flux:button
+                                        wire:click="$dispatch('confirm-delete', {
+                                        id: {{ $project->id }},
+                                        dispatchAction: 'delete-project',
+                                        modalName: 'delete-confirmation-modal',
+                                        heading: 'Delete Project?',
+                                        subheading: 'You are about to delete this project: <strong> {{ $project->name }}</strong>. This action cannot be undone.',
+                                        confirmButtonText: 'Delete Project'
+                                        })"
                                         variant="ghost" size="sm" icon="trash"
                                         class="cursor-pointer text-red-600">
                                     </flux:button>
@@ -123,24 +132,4 @@
     <div class="mt-4">
         {{ $projects->links() }}
     </div>
-
-    {{-- Delete Project Modal --}}
-    <flux:modal name="delete-project" class="min-w-[25rem]">
-        <div class="space-y-6">
-            <div>
-                <flux:heading size="lg">Delete project?</flux:heading>
-                <flux:text class="mt-2 text-zinc-500 dark:text-zinc-400">
-                    You're about to delete this project.<br>
-                    This action cannot be reversed.
-                </flux:text>
-            </div>
-            <div class="flex gap-2">
-                <flux:spacer />
-                <flux:modal.close>
-                    <flux:button variant="ghost">Cancel</flux:button>
-                </flux:modal.close>
-                <flux:button wire:click='deleteProject' variant="danger">Delete project</flux:button>
-            </div>
-        </div>
-    </flux:modal>
 </div>

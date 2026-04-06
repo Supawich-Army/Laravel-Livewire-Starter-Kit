@@ -48,8 +48,10 @@ class FormModal extends Component
 
         if ($this->projectId) {
             $projectService->updateProject($this->projectId, $validatedProjectRequest);
+            $message = 'Project updated successfully.';
         } else {
             $projectService->saveProject($validatedProjectRequest);
+            $message = 'Project created successfully.';
         }
 
         $this->reset(['name', 'description', 'deadline', 'project_logo', 'projectId', 'existingImage']);
@@ -57,10 +59,8 @@ class FormModal extends Component
 
         $this->dispatch(
             'flash',
-            [
-                'message' => 'Project updated successfully.',
-                'type' => 'success',
-            ]
+            message: $message,
+            type: 'success'
         );
 
         $this->dispatch('refresh-project-listing');
