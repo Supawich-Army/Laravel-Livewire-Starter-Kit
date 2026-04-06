@@ -28,9 +28,34 @@ class ProjectService
             $projectRequest['project_logo'] = $projectLogoPath;
         }
 
-        $projectRequest['slug'] = Str::slug($projectRequest['name']);
+        $projectRequest['slug'] = $this->generateUniqueSlug($projectRequest['name']);
 
         return $this->projectRepository->saveProject($projectRequest);
+    }
+
+    /**
+     * Generate a unique slug for a project.
+     *
+     * @param string $name
+     * @param int|null $excludeId
+     * @return string
+     */
+    protected function generateUniqueSlug($name, $excludeId = null)
+    {
+        $slug = Str::slug($name);
+        $originalSlug = $slug;
+        $count = 1;
+
+        while ($this->projectRepository->getProjectQuery()
+            ->where('slug', $slug)
+            ->when($excludeId, fn($query) => $query->where('id', '!=', $excludeId))
+            ->exists()
+        ) {
+            $slug = "{$originalSlug}-{$count}";
+            $count++;
+        }
+
+        return $slug;
     }
 
     /**
@@ -68,7 +93,7 @@ class ProjectService
             }
 
             $project->name = $projectRequest['name'];
-            $project->slug = Str::slug($projectRequest['name']);
+            $project->slug = $this->generateUniqueSlug($projectRequest['name'], $projectId);
             $project->description = $projectRequest['description'];
             $project->status = $projectRequest['status'];
             $project->deadline = $projectRequest['deadline'];
